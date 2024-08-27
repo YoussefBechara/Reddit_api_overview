@@ -11,20 +11,17 @@ def remove_emojis(text):
     return emoji_pattern.sub(r'', text)
 
 def gather_reddit_facts(num_of_facts, num_of_facts_to_skip, timeout=60):
-    # Initialize Reddit API credentials
+
     reddit = praw.Reddit(
-        client_id='u4GvqqFOIe04MAPi5RPHcA',
-        client_secret='t9RdFNwCrO26fwI5z-X31LI37kMmCQ',
-        user_agent='MyRedditApp/1.0 by MyUsername'
+        client_id='your client id',
+        client_secret='your client secret',
+        user_agent='you user agent'
     )
 
-    # Fetch stories from r/stories
     subreddit = reddit.subreddit('facts')
     facts_list = []
 
-    # Adjusted the timeout handling
     for i, submission in enumerate(subreddit.top(time_filter ='all')):
-        # Skip the facts that the user wants to skip
         if i < num_of_facts_to_skip:
             continue
 
@@ -32,7 +29,7 @@ def gather_reddit_facts(num_of_facts, num_of_facts_to_skip, timeout=60):
             content = submission.selftext
         except praw.exceptions.RequestException as e:
             print(f"Error fetching content for submission {submission.id}: {e}")
-            continue  # Skip this submission and move on to the next one
+            continue
 
         content_without_emojis = remove_emojis(content)
         facts_list.append({
@@ -40,11 +37,10 @@ def gather_reddit_facts(num_of_facts, num_of_facts_to_skip, timeout=60):
             'content': content_without_emojis,
         })
 
-        # Stop fetching when we have enough facts
         if len(facts_list) >= num_of_facts:
             break
 
-    return facts_list  # Return the entire list of facts, each with a title and content
+    return facts_list
 
 if __name__ == '__main__':
     facts = gather_reddit_facts(1)
